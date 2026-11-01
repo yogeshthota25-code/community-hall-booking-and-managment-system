@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Check Availability | Sri Mahalakshmi Devalaya{% endblock %}
+
+{% block content %}
+
+<section class="form-section availability-section">
+    <div class="form-heading">
+        <p class="eyebrow">FUNCTION HALL SCHEDULE</p>
+        <h1>Check Hall Availability</h1>
+        <p>
+            Select your event and preferred hours to check this hall's current
+            reservation schedule.
+        </p>
+    </div>
+
+    <form method="GET" action="{{ url_for('availability') }}"
+          class="booking-form availability-form">
+        <div class="form-grid">
+            <div class="field full-width">
+                <label for="event_type">What event are you planning? *</label>
+                <select id="event_type" name="event_type" required>
+                    <option value="">Select an event</option>
+                    {% for event in event_types %}
+                        <option value="{{ event }}"
+                            {% if event_type == event %}selected{% endif %}>
+                            {{ event }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="booking_date">Event Date *</label>
+                <input id="booking_date" name="booking_date" type="date"
+                       min="{{ today }}" value="{{ booking_date }}" required>
+            </div>
+
+            <div class="field">
+                <label for="start_time">Start Time *</label>
+                <input id="start_time" name="start_time" type="time"
+                       value="{{ start_time }}" required>
+            </div>
+
+            <div class="field">
+                <label for="end_time">End Time *</label>
+                <input id="end_time" name="end_time" type="time"
+                       value="{{ end_time }}" required>
+            </div>
+
+            <div class="field availability-submit">
+                <button class="btn" type="submit">Check Time Slot</button>
+            </div>
+        </div>
+    </form>
+
+    {% if error %}
+        <div class="availability-result is-unavailable" role="alert">
+            <p class="eyebrow">CHECK NOT COMPLETE</p>
+            <p>{{ error }}</p>
+        </div>
+    {% elif checked and is_available is not none %}
+        {% if is_available %}
+            <div class="availability-result is-available" role="status" aria-live="polite">
+                <p class="eyebrow">CURRENTLY AVAILABLE</p>
+                <h2>Your requested time is open</h2>
+                <p>
+                    {{ event_type }} · {{ booking_date }} ·
+                    {{ start_time }}–{{ end_time }}
+                </p>
+                <p class="availability-note">
+                    Availability can change until the hall team reviews your
+                    reservation request. The slot will be checked again when
+                    you submit the booking.
+                </p>
+                <a class="btn" href="{{ url_for('book', event_type=event_type, booking_date=booking_date, start_time=start_time, end_time=end_time) }}">
+                    Continue to Booking
+                </a>
+            </div>
+        {% else %}
+            <div class="availability-result is-unavailable" role="status" aria-live="polite">
+                <p class="eyebrow">TIME SLOT UNAVAILABLE</p>
+                <h2>Please choose another time</h2>
+                <p>
+                    A pending or approved reservation overlaps your selection
+                    on {{ booking_date }} from {{ start_time }} to {{ end_time }}.
+                </p>
+                <p class="availability-note">
+                    Pending requests are temporarily held while the hall team
+                    reviews them. Try another time or date above.
+                </p>
+            </div>
+        {% endif %}
+    {% endif %}
+</section>
+
+{% endblock %}

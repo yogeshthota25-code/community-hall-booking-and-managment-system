@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+
+<section class="login-section">
+
+    <div class="login-card">
+
+        <p class="eyebrow">MANAGEMENT PORTAL</p>
+        <h1>Administrator Login</h1>
+
+        <p>Sign in to review and manage hall reservations.</p>
+
+        <form method="POST"
+              action="{{ url_for('admin_login') }}">
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" name="username"
+                       type="text" required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password" name="password"
+                       type="password" required>
+            </div>
+
+            <button type="submit" class="btn submit-btn">
+                Login
+            </button>
+
+        </form>
+
+        {% if setup_available %}
+            <p class="form-note admin-auth-links">
+                First time here? <a href="{{ url_for('admin_setup') }}">Create the administrator account</a>.
+                Setup closes after the first account is created.
+            </p>
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

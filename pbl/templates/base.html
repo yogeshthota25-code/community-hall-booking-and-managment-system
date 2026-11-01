@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Sri Mahalakshmi Devalaya{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <a class="logo" href="{{ url_for('home') }}">
+        🛕 Sri Mahalakshmi Devalaya
+    </a>
+
+    <nav>
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('availability') }}">Availability</a>
+        <a href="{{ url_for('book') }}">Book Hall</a>
+        <a href="{{ url_for('admin_login') }}">Admin</a>
+    </nav>
+</header>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="messages">
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <p>© 2026 Sri Mahalakshmi Devalaya</p>
+    <p>Vasanthapura, Subramanyapura, Bengaluru – 560061</p>
+    <p>Community Hall Booking and Management System</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Details{% endblock %}
+
+{% block content %}
+
+<section class="confirmation-section">
+
+    <div class="confirmation-card">
+
+        <div class="success-icon">✓</div>
+
+        <p class="eyebrow">RESERVATION REQUEST RECEIVED</p>
+
+        <h1>Thank You, {{ booking.name }}!</h1>
+
+        <p>
+            The hall team will review your event details and contact you to
+            confirm availability and the final quotation.
+        </p>
+
+        <div class="booking-reference">
+            <span>Booking Reference</span>
+            <strong>{{ booking.booking_code }}</strong>
+        </div>
+
+        <div class="details-list">
+
+            <div>
+                <span>Event</span>
+                <strong>{{ booking.event_type }}</strong>
+            </div>
+
+            <div>
+                <span>Venue</span>
+                <strong>{{ booking.hall_package }}</strong>
+            </div>
+
+            <div>
+                <span>Date</span>
+                <strong>{{ booking.booking_date }}</strong>
+            </div>
+
+            <div>
+                <span>Time</span>
+                <strong>{{ booking.start_time }} – {{ booking.end_time }}</strong>
+            </div>
+
+            <div>
+                <span>Guests</span>
+                <strong>{{ booking.guests }}</strong>
+            </div>
+
+            <div>
+                <span>Booking Status</span>
+                <strong>{{ booking.status }}</strong>
+            </div>
+
+            <div>
+                <span>Hall Rental Estimate</span>
+                <strong>₹{{ "{:,}".format(booking.hall_amount) }}</strong>
+            </div>
+
+            <div>
+                <span>Catering Estimate</span>
+                <strong>₹{{ "{:,}".format(booking.catering_amount) }}</strong>
+            </div>
+
+            <div>
+                <span>Estimated Total</span>
+                <strong>₹{{ "{:,}".format(booking.amount) }}</strong>
+            </div>
+
+            <div>
+                <span>Amount Paid</span>
+                <strong>₹{{ "{:,}".format(booking.amount_paid) }}</strong>
+            </div>
+
+            <div>
+                <span>Balance Due</span>
+                <strong>₹{{ "{:,}".format(booking.amount - booking.amount_paid) }}</strong>
+            </div>
+
+            <div>
+                <span>Payment Status</span>
+                <strong>{{ booking.payment_status }}</strong>
+            </div>
+
+            <div>
+                <span>Preferred Payment Method</span>
+                <strong>{{ booking.preferred_payment_method }}</strong>
+            </div>
+
+            <div>
+                <span>Catering</span>
+                <strong>{{ booking.catering_option }}</strong>
+            </div>
+
+            <div>
+                <span>Decoration</span>
+                <strong>{{ booking.decoration_option }}</strong>
+            </div>
+
+            <div>
+                <span>Seating Arrangement</span>
+                <strong>{{ booking.seating_layout }}</strong>
+            </div>
+
+            {% if booking.payment_method %}
+                <div>
+                    <span>Recorded Payment Method</span>
+                    <strong>{{ booking.payment_method }}</strong>
+                </div>
+            {% endif %}
+
+            {% if booking.payment_reference %}
+                <div>
+                    <span>Payment Reference</span>
+                    <strong>{{ booking.payment_reference }}</strong>
+                </div>
+            {% endif %}
+
+            {% if booking.address %}
+                <div class="detail-wide">
+                    <span>Postal Address</span>
+                    <strong>{{ booking.address }}</strong>
+                </div>
+            {% endif %}
+
+            {% if booking.notes %}
+                <div class="detail-wide">
+                    <span>Special Requirements</span>
+                    <strong>{{ booking.notes }}</strong>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <p class="form-note">
+            Keep your reference for future communication. This estimate uses
+            attendance-based hall rates and the selected catering option. The
+            hall team confirms the final quotation; no payment is collected here.
+        </p>
+
+        <a href="{{ url_for('home') }}" class="btn">
+            Return Home
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

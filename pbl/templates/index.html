@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Sri Mahalakshmi Devalaya | Hall Booking{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">WELCOME TO OUR COMMUNITY</p>
+
+        <h1>Sri Mahalakshmi<br>Devalaya</h1>
+
+        <p class="hero-description">
+            A welcoming venue for weddings, family celebrations,
+            religious ceremonies and community gatherings.
+        </p>
+
+        <div class="hero-buttons">
+            <a class="btn" href="{{ url_for('availability') }}">
+                Check Availability
+            </a>
+
+            <a class="btn btn-light"
+               href="#hall-details">
+                Explore Hall
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="hall-details">
+    <div class="section-heading">
+        <p class="eyebrow">EXPLORE THE HALL</p>
+        <h2>Set the Scene for Your Celebration</h2>
+        <p>
+            View function-hall arrangements for weddings, family occasions,
+            and traditional ceremonies.
+        </p>
+    </div>
+
+    <div class="hall-gallery">
+        <figure class="hall-photo">
+            <img src="{{ url_for('static', filename='images/hall-banquet.jpg') }}"
+                 alt="Banquet hall arranged with round tables and reception lighting"
+                 loading="lazy">
+            <figcaption>Banquet reception arrangement</figcaption>
+        </figure>
+
+        <figure class="hall-photo">
+            <img src="{{ url_for('static', filename='images/hall-wedding.jpg') }}"
+                  alt="Wedding dining table decorated with flowers inside a function venue"
+                 loading="lazy">
+              <figcaption>Wedding dining arrangement</figcaption>
+        </figure>
+
+        <figure class="hall-photo">
+            <img src="{{ url_for('static', filename='images/hall-ceremony.jpg') }}"
+                 alt="Formal event tables set for a ceremony and dinner"
+                 loading="lazy">
+            <figcaption>Ceremony and dining setup</figcaption>
+        </figure>
+    </div>
+
+    <p class="gallery-note">Representative function-hall photography.</p>
+</section>
+
+<section class="booking-banner">
+    <div>
+        <p class="eyebrow">PLAN YOUR EVENT</p>
+        <h2>Check Your Event Date</h2>
+        <p>
+            Check your preferred time before submitting a reservation request.
+        </p>
+    </div>
+
+    <a class="btn" href="{{ url_for('availability') }}">
+        Check Availability
+    </a>
+</section>
+
+<section class="section location-section">
+    <div class="section-heading">
+        <p class="eyebrow">FIND US</p>
+        <h2>Our Location</h2>
+
+        <p>
+            Sri Mahalakshmi Devalaya<br>
+            Vasanthapura, Subramanyapura,<br>
+            Bengaluru, Karnataka – 560061
+        </p>
+
+        <a class="btn"
+           target="_blank"
+           rel="noopener noreferrer"
+           href="https://maps.app.goo.gl/oaYYtMacAg5cvA4k7?g_st=aw">
+            Open Google Maps
+        </a>
+    </div>
+</section>
+
+{% endblock %}

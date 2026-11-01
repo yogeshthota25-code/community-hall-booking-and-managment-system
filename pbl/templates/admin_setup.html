@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}First-Time Administrator Setup{% endblock %}
+
+{% block content %}
+
+<section class="login-section">
+    <div class="login-card">
+        <p class="eyebrow">ONE-TIME SETUP</p>
+        <h1>Create Administrator Account</h1>
+        <p>This creates the first account for managing bookings. Setup closes after this account is created.</p>
+
+        <form method="POST" action="{{ url_for('admin_setup') }}">
+            <div class="field">
+                <label for="username">Administrator Username</label>
+                <input id="username" name="username" type="text"
+                       minlength="3" maxlength="50" autocomplete="username"
+                       pattern="[A-Za-z0-9._-]+" required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password"
+                       minlength="12" autocomplete="new-password" required>
+                <small>Use at least 12 characters.</small>
+            </div>
+
+            <div class="field">
+                <label for="confirm_password">Confirm Password</label>
+                <input id="confirm_password" name="confirm_password"
+                       type="password" minlength="12"
+                       autocomplete="new-password" required>
+            </div>
+
+            <button type="submit" class="btn submit-btn">Create Account</button>
+        </form>
+
+        <p class="form-note">
+            Your password is stored as a secure hash. Keep it private; it cannot be viewed in the admin panel.
+        </p>
+    </div>
+</section>
+
+{% endblock %}

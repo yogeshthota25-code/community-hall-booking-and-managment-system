@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Book the Hall | Sri Mahalakshmi Devalaya{% endblock %}
+
+{% block content %}
+
+<section class="form-section">
+
+    <div class="form-heading">
+        <p class="eyebrow">FUNCTION HALL RESERVATION</p>
+        <h1>Plan Your Event</h1>
+        <p>
+            Share your event schedule and requirements. The hall team will
+            confirm availability and any additional service charges.
+        </p>
+    </div>
+
+    <div class="price-box">
+        <span>Estimated reservation total</span>
+        <strong id="quote-total">Enter guest count</strong>
+        <small id="quote-note">Hall pricing is based on attendance and catering selection.</small>
+        <small>
+            Hall: ₹{{ "{:,}".format(hall_price) }} per first {{ capacity_tier_size }} guests,
+            +₹{{ "{:,}".format(capacity_tier_increment) }} per additional tier.
+            Vegetarian catering: ₹{{ "{:,}".format(catering_rate) }} per guest.
+        </small>
+        <small class="rate-disclaimer">Example rates; confirm the venue tariff before accepting payment.</small>
+    </div>
+
+    <form method="POST"
+          action="{{ url_for('book') }}"
+            class="booking-form"
+            data-base-hall-rate="{{ hall_price }}"
+            data-tier-size="{{ capacity_tier_size }}"
+            data-tier-increment="{{ capacity_tier_increment }}"
+            data-catering-rate="{{ catering_rate }}"
+            data-maximum-guests="{{ max_guests }}">
+
+        <div class="form-grid">
+
+            <h2 class="form-subheading full-width">Contact Details</h2>
+
+            <div class="field">
+                <label for="name">Full Name *</label>
+                <input id="name" name="name"
+                       type="text" maxlength="100"
+                       required>
+            </div>
+
+            <div class="field">
+                <label for="phone">Mobile Number *</label>
+                <input id="phone" name="phone"
+                       type="tel" inputmode="numeric"
+                       pattern="[0-9]{10}"
+                       maxlength="10" required>
+            </div>
+
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input id="email" name="email"
+                       type="email" maxlength="150">
+            </div>
+
+            <div class="field full-width">
+                <label for="address">Postal Address</label>
+                <textarea id="address" name="address"
+                          rows="2" maxlength="500"></textarea>
+            </div>
+
+            <h2 class="form-subheading full-width">Event Schedule</h2>
+
+            <div class="field">
+                <label for="event_type">Event Type *</label>
+                <select id="event_type" name="event_type" required>
+                    <option value="">Select an event</option>
+                    {% for event in event_types %}
+                        <option value="{{ event }}"
+                            {% if booking_values.get('event_type') == event %}selected{% endif %}>
+                            {{ event }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="booking_date">Event Date *</label>
+                <input id="booking_date" name="booking_date"
+                       type="date" min="{{ today }}"
+                       value="{{ booking_values.get('booking_date', '') }}" required>
+            </div>
+
+            <div class="field">
+                <label for="guests">Expected Guests *</label>
+                <input id="guests" name="guests"
+                       type="number" min="1"
+                       max="{{ max_guests }}"
+                       value="{{ booking_values.get('guests', '') }}" required>
+                <small>Maximum capacity: {{ "{:,}".format(max_guests) }} guests.</small>
+            </div>
+
+            <div class="field">
+                <label for="start_time">Start Time *</label>
+                <input id="start_time" name="start_time"
+                      type="time" value="{{ booking_values.get('start_time', '') }}" required>
+            </div>
+
+            <div class="field">
+                <label for="end_time">End Time *</label>
+                <input id="end_time" name="end_time"
+                      type="time" value="{{ booking_values.get('end_time', '') }}" required>
+            </div>
+
+            <h2 class="form-subheading full-width">Event Requirements</h2>
+
+            <div class="field full-width">
+                <label for="venue">Venue</label>
+                <input id="venue" type="text"
+                       value="Sri Mahalakshmi Community Hall · Maximum {{ "{:,}".format(max_guests) }} guests"
+                       readonly>
+                <input type="hidden" name="hall_package" value="Community Hall">
+            </div>
+
+            <div class="field">
+                <label for="catering_option">Catering</label>
+                <select id="catering_option" name="catering_option">
+                    <option>Not required</option>
+                    <option value="Vegetarian catering">Vegetarian catering · ₹{{ "{:,}".format(catering_rate) }} per guest</option>
+                    <option>Discuss with management</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="decoration_option">Decoration</label>
+                <select id="decoration_option" name="decoration_option">
+                    <option>Not required</option>
+                    <option>Basic decoration</option>
+                    <option>Custom decoration</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="seating_layout">Seating Arrangement</label>
+                <select id="seating_layout" name="seating_layout">
+                    <option>Not specified</option>
+                    <option>Theatre</option>
+                    <option>Banquet</option>
+                    <option>Traditional</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field full-width">
+                <label for="notes">Special Requirements</label>
+                <textarea id="notes" name="notes"
+                          rows="3" maxlength="2000"
+                          placeholder="Stage, accessibility, setup or other requests"></textarea>
+            </div>
+
+            <h2 class="form-subheading full-width">Payment Preference</h2>
+
+            <div class="payment-summary full-width">
+                <div class="quote-line">
+                    <span>Capacity-based hall rental</span>
+                    <strong id="hall-amount">—</strong>
+                </div>
+                <div class="quote-line">
+                    <span>Catering estimate</span>
+                    <strong id="catering-amount">—</strong>
+                </div>
+                <div class="quote-line quote-total-line">
+                    <span>Estimated total</span>
+                    <strong id="summary-total">—</strong>
+                </div>
+                <p id="payment-quote-note">
+                    No payment is taken on this website. The hall team confirms
+                    the final amount before accepting the reservation.
+                </p>
+            </div>
+
+            <div class="field full-width">
+                <label for="preferred_payment_method">Preferred Payment Method</label>
+                <select id="preferred_payment_method" name="preferred_payment_method" required>
+                    <option>UPI</option>
+                    <option>Cash</option>
+                    <option>Bank transfer</option>
+                </select>
+            </div>
+
+            <p class="form-note full-width">
+                This request is not a confirmed reservation. Do not enter card
+                numbers, banking passwords or payment PINs here.
+            </p>
+
+        </div>
+
+        <button type="submit" class="btn submit-btn">
+            Submit Reservation Request
+        </button>
+
+    </form>
+
+</section>
+
+<script src="{{ url_for('static', filename='booking-quote.js') }}" defer></script>
+
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="dashboard-heading">
+        <div>
+            <p class="eyebrow">HALL MANAGEMENT</p>
+            <h1>Admin Dashboard</h1>
+            <p>Review saved requests and approve or reject each reservation.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin_logout') }}">
+            <button class="btn btn-light" type="submit">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <span>Pending</span>
+            <strong>{{ counts['Pending'] }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Approved</span>
+            <strong>{{ counts['Approved'] }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Rejected</span>
+            <strong>{{ counts['Rejected'] }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Cancelled</span>
+            <strong>{{ counts['Cancelled'] }}</strong>
+        </div>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-heading">
+            <h2>Booking Records</h2>
+            <a class="btn btn-light" href="{{ url_for('export_bookings') }}">
+                Export CSV
+            </a>
+        </div>
+
+        <form method="GET"
+              action="{{ url_for('admin_dashboard') }}"
+              class="search-form">
+
+            <input type="text"
+                   name="search"
+                   value="{{ search }}"
+                   placeholder="Search name, phone or booking ID">
+
+            <select name="status">
+                <option value="">All statuses</option>
+
+                {% for s in ['Pending', 'Approved', 'Rejected', 'Cancelled'] %}
+                    <option value="{{ s }}"
+                        {% if status_filter == s %}selected{% endif %}>
+                        {{ s }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn">
+                Search
+            </button>
+
+        </form>
+
+        <div class="table-wrapper">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Customer</th>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for b in bookings %}
+
+                    <tr>
+                        <td>{{ b.booking_code }}</td>
+
+                        <td>
+                            <strong>{{ b.name }}</strong><br>
+                            <small>{{ b.phone }}</small>
+
+                            {% if b.email %}
+                                <br><small>{{ b.email }}</small>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ b.event_type }}</td>
+
+                        <td>{{ b.booking_date }}</td>
+
+                        <td>
+                            {{ b.start_time }} – {{ b.end_time }}
+                        </td>
+
+                        <td>
+                            <strong>₹{{ "{:,}".format(b.amount) }}</strong><br>
+                            <small>Hall ₹{{ "{:,}".format(b.hall_amount) }}</small><br>
+                            <small>Catering ₹{{ "{:,}".format(b.catering_amount) }}</small><br>
+                            <small>Paid ₹{{ "{:,}".format(b.amount_paid) }}</small><br>
+                            <small>Due ₹{{ "{:,}".format(b.amount - b.amount_paid) }}</small>
+                        </td>
+
+                        <td>
+                            {{ b.payment_status }}
+                            {% if b.payment_method %}
+                                <br><small>{{ b.payment_method }}</small>
+                            {% elif b.preferred_payment_method %}
+                                <br><small>Prefers {{ b.preferred_payment_method }}</small>
+                            {% endif %}
+                            {% if b.payment_reference %}
+                                <br><small>Ref: {{ b.payment_reference }}</small>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="status status-{{ b.status|lower }}">
+                                {{ b.status }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <form method="POST"
+                                  action="{{ url_for('update_booking', booking_id=b.id) }}"
+                                  class="action-form">
+
+                                <select name="status" required>
+                                    {% for s in ['Pending', 'Approved', 'Rejected', 'Cancelled'] %}
+                                        <option value="{{ s }}"
+                                            {% if b.status == s %}selected{% endif %}>
+                                            {{ s }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button class="btn small-btn" type="submit">
+                                    Save Decision
+                                </button>
+
+                            </form>
+                        </td>
+                    </tr>
+
+                    <tr class="details-row">
+                        <td colspan="9">
+                            <strong>Guests:</strong> {{ b.guests }}
+                            &nbsp; | &nbsp;
+                            <strong>Venue:</strong> {{ b.hall_package }}
+                            &nbsp; | &nbsp;
+                            <strong>Catering:</strong> {{ b.catering_option }}
+                            &nbsp; | &nbsp;
+                            <strong>Decoration:</strong> {{ b.decoration_option }}
+                            &nbsp; | &nbsp;
+                            <strong>Seating:</strong> {{ b.seating_layout }}
+
+                            {% if b.address %}
+                                &nbsp; | &nbsp;
+                                <strong>Address:</strong> {{ b.address }}
+                            {% endif %}
+
+                            {% if b.notes %}
+                                &nbsp; | &nbsp;
+                                <strong>Requirements:</strong> {{ b.notes }}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr class="payment-row">
+                        <td colspan="9">
+                            <form method="POST"
+                                  action="{{ url_for('update_payment', booking_id=b.id) }}"
+                                  class="payment-form">
+                                <label>
+                                    Amount paid
+                                    <input type="number" name="amount_paid"
+                                           min="0" max="{{ b.amount }}" step="1"
+                                           value="{{ b.amount_paid }}" required>
+                                </label>
+                                <label>
+                                    Payment method
+                                    <select name="payment_method">
+                                        <option value="">Not recorded</option>
+                                        {% for method in ['UPI', 'Cash', 'Bank transfer'] %}
+                                            <option value="{{ method }}"
+                                                {% if b.payment_method == method %}selected{% endif %}>
+                                                {{ method }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                                <label>
+                                    Reference (optional)
+                                    <input type="text" name="payment_reference"
+                                           maxlength="100" value="{{ b.payment_reference }}">
+                                </label>
+                                <button class="btn small-btn" type="submit">
+                                    Save Payment
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="9">
+                            No bookings found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
